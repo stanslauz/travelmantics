@@ -13,11 +13,12 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".DealActivity"
-
+        android:screenOrientation="portrait"
             >
 
         </activity>
-        <activity android:name=".ListActivity">
+        <activity android:name=".ListActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 

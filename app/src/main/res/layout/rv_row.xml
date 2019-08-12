@@ -31,17 +31,16 @@
         android:id="@+id/tvPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/txt_margin_standard"
         android:text="TextView"
-        android:textSize="@dimen/text_price"
         android:textColor="@color/colorAccent"
+        android:textSize="@dimen/text_price"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
 
     <ImageView
         android:id="@+id/imageDeal"
-        android:layout_width="139dp"
-        android:layout_height="111dp"
+        android:layout_width="119dp"
+        android:layout_height="85dp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher"

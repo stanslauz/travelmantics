@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -128,38 +129,37 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == PICTURE_RESULT && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
-            StorageReference ref = FirebaseUtil.mStorageRef.child(imageUri.getLastPathSegment());
-            ref.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Task<Uri> url = taskSnapshot.getStorage().getDownloadUrl();
-                    while
-                    (!url.isSuccessful()) ;
-                    Uri downloadUrl = url.getResult();
-                    String urlt = downloadUrl.toString();
-                    //String ur = taskSnapshot.getUploadSessionUri().toString();
-                    deal.setImageUrl(urlt);
-                    Log.d("Url: ",urlt);
+            ImageView uploadImage = findViewById(R.id.image);
+            uploadImage.setImageURI(imageUri);
+            final StorageReference storageReference =
+                    FirebaseUtil.mStorageRef.child("images/" + imageUri.getLastPathSegment());
+            storageReference.putFile(imageUri).addOnSuccessListener(
+                    new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            final String imageName = taskSnapshot.getStorage().getPath();
+                            storageReference.getDownloadUrl().addOnSuccessListener(
+                                    new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            deal.setImageUrl(uri.toString());
+                                            deal.setImageName(imageName);
+                                            Log.d("Url", uri.toString());
+                                            Log.d("Name", imageName);
+                                            showImage(uri.toString());
+                                        }
+                                    }
+                            );
                         }
                     });
-//                    String url = taskSnapshot.getStorage().getDownloadUrl().toString();
-                   // String pictureName = taskSnapshot.getStorage().getPath();
-                    //   deal.setImageUrl(url);
-                    //deal.setImageName(pictureName);
-//                    Log.d("Url: ", url);
-//                    Log.d("Name", pictureName);
-//                    showImage(url);
-                }
-            }
-
-
-
+        }
+    }
 
 
     private void saveDeal() {
@@ -188,6 +188,20 @@ protected void onCreate(Bundle savedInstanceState) {
          }
          else{
              mDatabaseReference.child(deal.getId()).removeValue();
+             if(deal.getImageName() !=null && deal.getImageName().isEmpty() == false){
+                 StorageReference picRef = FirebaseUtil.mStorage.getReference().child(deal.getImageName());
+                 picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                     @Override
+                     public void onSuccess(Void aVoid) {
+
+                     }
+                 }).addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+
+                     }
+                 });
+             }
          }
 
     }
